@@ -17,7 +17,7 @@ MODEL_URLS = {
         "compressed": True
     },
     "bisenet_face_parsing.pth": {
-        "url": "https://github.com/zllrunning/face-parsing.PyTorch/raw/master/res/cp/79999_iter.pth",
+        "url": "https://github.com/zllrunning/face-makeup.PyTorch/raw/refs/heads/master/cp/79999_iter.pth",
         "compressed": False
     }
 }
