@@ -7,10 +7,10 @@ A simple Python library for creating face masks from images using facial landmar
 You can install the package directly from GitHub:
 
 ```bash
-pip install git+https://github.com/yourusername/face-mask-creator.git
+pip install git+https://github.com/marmeladze/face-mask-creator.git
 ```
 
-The package will automatically download the required dlib shape predictor model file on first import.
+The package will automatically download the required dlib shape predictor model file during installation.
 
 ## Usage
 
@@ -66,7 +66,7 @@ The library supports three types of output:
 
 ## Model Files
 
-The library uses dlib's facial landmarks predictor model, which is automatically downloaded on first import. The model file is stored in the package's `models` directory.
+The library uses dlib's facial landmarks predictor model, which is automatically downloaded during package installation. The model file is stored in the package's `models` directory.
 
 If you need to manually download the model file, you can find it at:
 http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
