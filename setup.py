@@ -25,11 +25,14 @@ MODEL_URLS = {
 
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description='Setup face-mask-creator with optional custom model paths')
-    parser.add_argument('--shape-predictor', type=str, help='Path to custom shape predictor model')
-    parser.add_argument('--bisenet-model', type=str, help='Path to custom BiSeNet model')
-    parser.add_argument('--skip-download', action='store_true', help='Skip downloading default models')
-    return parser.parse_args()
+    # Only parse arguments if this script is run directly
+    if len(sys.argv) > 1 and sys.argv[1] not in ['egg_info', 'install', 'develop']:
+        parser = argparse.ArgumentParser(description='Setup face-mask-creator with optional custom model paths')
+        parser.add_argument('--shape-predictor', type=str, help='Path to custom shape predictor model')
+        parser.add_argument('--bisenet-model', type=str, help='Path to custom BiSeNet model')
+        parser.add_argument('--skip-download', action='store_true', help='Skip downloading default models')
+        return parser.parse_args()
+    return None
 
 def download_model_files(custom_paths=None, skip_download=False):
     """Download required model files during setup using wget."""
@@ -95,17 +98,21 @@ def download_model_files(custom_paths=None, skip_download=False):
         json.dump(model_paths, f, indent=4)
     logger.info(f"Model paths saved to {config_file}")
 
-# Parse command line arguments
+# Parse command line arguments only if running directly
 args = parse_args()
 
-# Prepare custom paths dictionary
-custom_paths = {
-    "shape_predictor_68_face_landmarks.dat": args.shape_predictor,
-    "bisenet_face_parsing.pth": args.bisenet_model
-}
+# Prepare custom paths dictionary if args exist
+custom_paths = None
+skip_download = False
+if args:
+    custom_paths = {
+        "shape_predictor_68_face_landmarks.dat": args.shape_predictor,
+        "bisenet_face_parsing.pth": args.bisenet_model
+    }
+    skip_download = args.skip_download
 
 # Download model files
-download_model_files(custom_paths=custom_paths, skip_download=args.skip_download)
+download_model_files(custom_paths=custom_paths, skip_download=skip_download)
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()

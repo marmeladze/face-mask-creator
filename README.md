@@ -1,84 +1,59 @@
 # Face Mask Creator
 
-A simple Python library for creating face masks from images using facial landmarks detection and BiSeNet face parsing.
+A simple library for creating face masks from images.
 
 ## Installation
 
-You can install the package directly from GitHub:
-
 ```bash
-pip install git+https://github.com/marmeladze/face-mask-creator.git
+pip install -e .
 ```
 
-The package will automatically download the required model files during installation.
+### Model Files
+
+The library requires two model files:
+
+1. **Shape Predictor Model**: `shape_predictor_68_face_landmarks.dat`
+   - Source: [dlib.net](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
+   - Used for: Detecting facial landmarks
+
+2. **BiSeNet Face Parsing Model**: `bisenet_face_parsing.pth`
+   - Source: [face-parsing.PyTorch](https://github.com/zllrunning/face-parsing.PyTorch/raw/master/res/cp/79999_iter.pth)
+   - Used for: Face parsing and segmentation
+
+These models will be automatically downloaded during installation. If you want to use your own model files or skip the download, you can use the following options:
+
+```bash
+# Use custom model files
+python setup.py --shape-predictor /path/to/your/shape_predictor.dat --bisenet-model /path/to/your/bisenet.pth
+
+# Skip downloading default models
+python setup.py --skip-download
+```
 
 ## Usage
 
 ```python
-from face_mask_creator import MaskCreator
-import cv2
+from face_mask_creator import FaceMaskCreator
 
-# Initialize the mask creator
-mask_creator = MaskCreator()
+# Initialize the creator
+creator = FaceMaskCreator()
 
-# Read an image
-image = cv2.imread('face.jpg')
+# Create a mask from an image
+mask = creator.create_mask("path/to/image.jpg")
 
-# Create a binary mask
-binary_mask = mask_creator.create(image, output_type='binary')
-
-# Create a mask with original image
-original_masked = mask_creator.create(image, output_type='original')
-
-# Create a mask with skin-colored background
-skin_masked = mask_creator.create(
-    image,
-    output_type='skin',
-    skin_color=(255, 224, 189)  # Optional: specify skin color in RGB
-)
-
-# Get facial regions
-regions = mask_creator.get_facial_regions(image)
-if regions:
-    for region_name, region_data in regions.items():
-        print(f"{region_name}: {region_data['box']}")
-
-# Save results
-cv2.imwrite('binary_mask.png', binary_mask)
-cv2.imwrite('original_masked.png', original_masked)
-cv2.imwrite('skin_masked.png', skin_masked)
+# Save the mask
+mask.save("output_mask.png")
 ```
-
-## Output Types
-
-The library supports three types of output:
-
-1. `binary`: A binary mask where 1 represents the face and 0 represents the background
-2. `original`: The original image with the face mask applied
-3. `skin`: The original image with the face mask applied and a skin-colored background
 
 ## Requirements
 
-- Python 3.7 or higher
+- Python 3.7+
 - numpy
 - opencv-python
 - dlib
 - torch
 - torchvision
 - pillow
-
-## Model Files
-
-The library uses two model files, which are automatically downloaded during package installation:
-
-1. dlib's facial landmarks predictor model: `shape_predictor_68_face_landmarks.dat`
-2. BiSeNet face parsing model: `bisenet_face_parsing.pth`
-
-These model files are stored in the package's `models` directory.
-
-If you need to manually download the model files, you can find them at:
-- dlib model: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
-- BiSeNet model: https://drive.google.com/uc?export=download&id=1-mEYsFwW5YQ2F6wJEbxk0OrKA9kQ5Z-_
 
 ## License
 
