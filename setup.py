@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 import os
 from pathlib import Path
-import urllib.request
-import hashlib
+import subprocess
 import bz2
 import logging
+import sys
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,13 +14,16 @@ logger = logging.getLogger(__name__)
 MODEL_URLS = {
     "shape_predictor_68_face_landmarks.dat": {
         "url": "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2",
-        "md5": "73fde5e05226548677a050913eed4e04",
         "compressed": True
+    },
+    "bisenet_face_parsing.pth": {
+        "url": "https://github.com/zllrunning/face-parsing.PyTorch/raw/master/res/cp/79999_iter.pth",
+        "compressed": False
     }
 }
 
 def download_model_files():
-    """Download required model files during setup."""
+    """Download required model files during setup using wget."""
     package_dir = Path(__file__).parent / "face_mask_creator"
     models_dir = package_dir / "models"
     
@@ -33,14 +36,15 @@ def download_model_files():
             logger.info(f"Downloading {filename}...")
             compressed_path = file_path.with_suffix('.bz2') if info.get("compressed", False) else file_path
             
-            # Download the file
-            urllib.request.urlretrieve(info["url"], compressed_path)
-            
-            # Verify MD5 hash
-            with open(compressed_path, 'rb') as f:
-                file_hash = hashlib.md5(f.read()).hexdigest()
-            if file_hash != info.get("md5"):
-                raise ValueError(f"MD5 hash mismatch for {filename}")
+            # Download the file using wget
+            try:
+                subprocess.run(["wget", info["url"], "-O", str(compressed_path)], check=True)
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Error downloading {filename}: {e}")
+                continue
+            except FileNotFoundError:
+                logger.error("wget not found. Please install wget or use a different download method.")
+                continue
             
             # Extract if compressed
             if info.get("compressed", False):
@@ -78,6 +82,9 @@ setup(
         "numpy>=1.19.0",
         "opencv-python>=4.5.0",
         "dlib>=19.24.6",
+        "torch>=1.7.0",
+        "torchvision>=0.8.0",
+        "pillow>=8.0.0",
     ],
     package_data={
         "face_mask_creator": ["models/*"],

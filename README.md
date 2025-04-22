@@ -1,6 +1,6 @@
 # Face Mask Creator
 
-A simple Python library for creating face masks from images using facial landmarks detection.
+A simple Python library for creating face masks from images using facial landmarks detection and BiSeNet face parsing.
 
 ## Installation
 
@@ -10,7 +10,7 @@ You can install the package directly from GitHub:
 pip install git+https://github.com/marmeladze/face-mask-creator.git
 ```
 
-The package will automatically download the required dlib shape predictor model file during installation.
+The package will automatically download the required model files during installation.
 
 ## Usage
 
@@ -63,13 +63,22 @@ The library supports three types of output:
 - numpy
 - opencv-python
 - dlib
+- torch
+- torchvision
+- pillow
 
 ## Model Files
 
-The library uses dlib's facial landmarks predictor model, which is automatically downloaded during package installation. The model file is stored in the package's `models` directory.
+The library uses two model files, which are automatically downloaded during package installation:
 
-If you need to manually download the model file, you can find it at:
-http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
+1. dlib's facial landmarks predictor model: `shape_predictor_68_face_landmarks.dat`
+2. BiSeNet face parsing model: `bisenet_face_parsing.pth`
+
+These model files are stored in the package's `models` directory.
+
+If you need to manually download the model files, you can find them at:
+- dlib model: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
+- BiSeNet model: https://drive.google.com/uc?export=download&id=1-mEYsFwW5YQ2F6wJEbxk0OrKA9kQ5Z-_
 
 ## License
 
