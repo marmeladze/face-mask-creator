@@ -4,9 +4,21 @@ A simple library for creating face masks from images.
 
 ## Installation
 
+### Basic Installation
+
 ```bash
 pip install -e .
 ```
+
+### With Web Interface
+
+To install with the web interface, use:
+
+```bash
+pip install -e ".[web]"
+```
+
+This will install additional dependencies required for the web server.
 
 ### Model Files
 
@@ -32,6 +44,8 @@ python setup.py --skip-download
 
 ## Usage
 
+### Python API
+
 ```python
 from face_mask_creator import FaceMaskCreator
 
@@ -45,8 +59,25 @@ mask = creator.create_mask("path/to/image.jpg")
 mask.save("output_mask.png")
 ```
 
+### Web Interface
+
+If you installed with the web extras, you can start the web server:
+
+```python
+from face_mask_creator.extras.web import start_server
+
+# Start the server (default: host='0.0.0.0', port=5000)
+start_server()
+
+# Or with custom host and port
+start_server(host='localhost', port=8080)
+```
+
+Then open your browser and navigate to `http://localhost:5000` (or your custom port) to use the web interface.
+
 ## Requirements
 
+### Core Requirements
 - Python 3.7+
 - numpy
 - opencv-python
@@ -54,6 +85,14 @@ mask.save("output_mask.png")
 - torch
 - torchvision
 - pillow
+
+### Web Interface Requirements (optional)
+- flask>=2.0.0
+- werkzeug>=2.0.0
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes between versions.
 
 ## License
 

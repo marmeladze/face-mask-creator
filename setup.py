@@ -119,7 +119,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="face-mask-creator",
-    version="0.0.1",
+    version="0.0.2",
     author="marmeladze",
     author_email="wrested@hotmail.de",
     description="A simple library for creating face masks from images",
@@ -141,8 +141,15 @@ setup(
         "torchvision>=0.8.0",
         "pillow>=8.0.0",
     ],
+    extras_require={
+        'web': [
+            'flask>=2.0.0',
+            'werkzeug>=2.0.0',
+        ],
+    },
     package_data={
         "face_mask_creator": ["models/*", "config/*"],
+        "face_mask_creator.extras.web": ["templates/*"],
     },
     py_modules=["face_mask_creator.utils"],
 ) 
