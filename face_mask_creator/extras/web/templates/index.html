@@ -73,12 +73,53 @@
             text-align: center;
             margin: 10px 0;
             display: none;
+            padding: 15px;
+            background-color: #ffebee;
+            border-radius: 5px;
+        }
+        .model-error {
+            color: #f44336;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #ffebee;
+            border-radius: 5px;
+            border: 1px solid #ffcdd2;
+        }
+        .model-error h2 {
+            margin-top: 0;
+            color: #d32f2f;
+        }
+        .model-error p {
+            margin: 10px 0;
+        }
+        .model-error code {
+            background-color: #fff;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Face Mask Creator</h1>
+        
+        <div id="model-error" class="model-error" style="display: none;">
+            <h2>Model Loading Error</h2>
+            <p>The face mask creator model failed to load. This could be due to:</p>
+            <ul>
+                <li>Missing or corrupted model files</li>
+                <li>Incomplete installation</li>
+                <li>Insufficient permissions</li>
+            </ul>
+            <p>Please try the following steps:</p>
+            <ol>
+                <li>Reinstall the package with: <code>pip install -e .</code></li>
+                <li>Check if the model files exist in the <code>face_mask_creator/models</code> directory</li>
+                <li>If needed, manually download the model files from the sources listed in the README</li>
+            </ol>
+        </div>
         
         <div class="upload-section">
             <input type="file" id="file-input" accept="image/*">
@@ -109,6 +150,24 @@
         const maskPreview = document.getElementById('mask-preview');
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
+        const modelError = document.getElementById('model-error');
+
+        // Check if the server is ready
+        fetch('/create_mask', { method: 'POST' })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        if (data.error && data.error.includes('model not loaded')) {
+                            modelError.style.display = 'block';
+                            fileInput.disabled = true;
+                            document.getElementById('upload-btn').disabled = true;
+                        }
+                    });
+                }
+            })
+            .catch(() => {
+                // Ignore errors during the initial check
+            });
 
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];

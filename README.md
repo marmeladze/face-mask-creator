@@ -47,16 +47,16 @@ python setup.py --skip-download
 ### Python API
 
 ```python
-from face_mask_creator import FaceMaskCreator
+from face_mask_creator import MaskCreator
 
 # Initialize the creator
-creator = FaceMaskCreator()
+creator = MaskCreator()
 
 # Create a mask from an image
-mask = creator.create_mask("path/to/image.jpg")
+mask = creator.create("path/to/image.jpg", output_type='binary')
 
 # Save the mask
-mask.save("output_mask.png")
+cv2.imwrite("output_mask.png", mask * 255)  # Scale to 0-255 for better visibility
 ```
 
 ### Web Interface
