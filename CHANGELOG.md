@@ -8,21 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.4] - 2024-04-29
 
 ### Added
-- Non-interactive installation support for pip
-- Post-installation model setup script
-- Installation instructions for PyPI, source, and GitHub release
-- Detailed model download instructions in README
-- Version-specific dependency requirements
+- Non-interactive installation support for pip install
+- Improved model download process
+- Better error handling during installation
 
 ### Changed
-- Updated README with comprehensive installation options
+- Updated installation instructions in README
+- Modified setup.py to handle pip installs better
 - Improved documentation clarity
-- Updated BiSeNet model source link in README
-- Modified setup script to handle pip installations better
 
 ### Fixed
-- Fixed pip installation issues with interactive prompts
-- Improved model download process during installation
+- Fixed pip install failing due to interactive prompts
+- Fixed model download process during installation
 
 ## [0.0.3] - 2024-03-21
 

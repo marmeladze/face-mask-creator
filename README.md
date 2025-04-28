@@ -4,15 +4,10 @@ A simple library for creating face masks from images.
 
 ## Installation
 
-### From PyPI (Recommended)
+### From GitHub (Recommended)
 
 ```bash
-pip install face-mask-creator
-```
-
-After installation, you'll need to download the required model files. Run:
-```bash
-python -m face_mask_creator.setup
+pip install git+https://github.com/marmeladze/face-mask-creator.git
 ```
 
 ### From Source
@@ -32,22 +27,6 @@ pip install -e .
 pip install -e ".[web]"
 ```
 
-3. Download the required model files:
-```bash
-python setup.py
-```
-
-### From GitHub Release
-
-```bash
-pip install git+https://github.com/marmeladze/face-mask-creator.git@v0.0.3
-```
-
-After installation, download the required model files:
-```bash
-python -m face_mask_creator.setup
-```
-
 ### Model Files
 
 The library requires two model files:
@@ -60,12 +39,18 @@ The library requires two model files:
    - Source: [Google Drive](https://drive.google.com/file/d/154JgKpzCPW82qINcVieuPH3fZ2e0P812/view)
    - Used for: Face parsing and segmentation
 
-During the model setup, you'll be prompted to:
+After installation, you'll need to download the model files. You can do this by running:
+
+```bash
+python setup.py
+```
+
+This will prompt you to:
 1. Choose whether to download the models or provide your own paths
 2. If downloading, the models will be automatically downloaded and placed in the correct location
-3. If using custom paths, you can specify them during setup
+3. If using custom paths, you can specify them during the process
 
-You can also use command-line options during setup:
+You can also use command-line options:
 
 ```bash
 # Use custom model files

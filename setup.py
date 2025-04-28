@@ -55,6 +55,11 @@ def parse_args():
 
 def download_model_files(custom_paths=None, skip_download=False):
     """Download required model files during setup using wget."""
+    # Skip model downloads during pip install
+    if os.environ.get('PIP_INSTALL', '0') == '1':
+        logger.info("Skipping model downloads during pip install")
+        return
+
     package_dir = Path(__file__).parent / "face_mask_creator"
     models_dir = package_dir / "models"
     
@@ -67,9 +72,6 @@ def download_model_files(custom_paths=None, skip_download=False):
     config_file = config_dir / "model_paths.json"
     
     model_paths = {}
-    
-    # Check if we're running in a pip install context
-    is_pip_install = any(arg.startswith(('install', 'bdist', 'build')) for arg in sys.argv[1:])
     
     for filename, info in MODEL_URLS.items():
         file_path = models_dir / filename
@@ -89,12 +91,6 @@ def download_model_files(custom_paths=None, skip_download=False):
             continue
             
         if not file_path.exists():
-            # During pip install, skip interactive prompts
-            if is_pip_install:
-                logger.info(f"Skipping interactive model download during pip install for {filename}")
-                logger.info("Please run 'python setup.py' after installation to download models")
-                continue
-                
             # Ask user for input
             print(f"\nModel file '{filename}' not found.")
             choice = get_user_input(
@@ -187,6 +183,9 @@ def run_smoke_tests():
     except Exception as e:
         logger.error(f"Smoke tests failed: {e}")
         return False
+
+# Set environment variable for pip install
+os.environ['PIP_INSTALL'] = '1'
 
 # Parse command line arguments only if running directly
 args = parse_args()
