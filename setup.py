@@ -6,6 +6,7 @@ import bz2
 import logging
 import sys
 import argparse
+import json
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -18,10 +19,28 @@ MODEL_URLS = {
         "compressed": True
     },
     "bisenet_face_parsing.pth": {
-        "url": "https://github.com/zllrunning/face-parsing.PyTorch/raw/master/res/cp/79999_iter.pth",
+        "url": "https://drive.google.com/file/d/154JgKpzCPW82qINcVieuPH3fZ2e0P812/view",
         "compressed": False
     }
 }
+
+def get_user_input(prompt, default=None):
+    """Get user input with optional default value."""
+    if default:
+        user_input = input(f"{prompt} [{default}]: ").strip()
+        return user_input if user_input else default
+    return input(f"{prompt}: ").strip()
+
+def download_from_gdrive(file_id, output_path):
+    """Download a file from Google Drive using gdown."""
+    try:
+        import gdown
+        url = f"https://drive.google.com/uc?id={file_id}"
+        gdown.download(url, output_path, quiet=False)
+        return True
+    except Exception as e:
+        logger.error(f"Error downloading from Google Drive: {e}")
+        return False
 
 def parse_args():
     """Parse command line arguments."""
@@ -67,36 +86,98 @@ def download_model_files(custom_paths=None, skip_download=False):
             continue
             
         if not file_path.exists():
-            logger.info(f"Downloading {filename}...")
-            compressed_path = file_path.with_suffix('.bz2') if info.get("compressed", False) else file_path
+            # Ask user for input
+            print(f"\nModel file '{filename}' not found.")
+            choice = get_user_input(
+                "Do you want to:\n"
+                "1. Download from internet\n"
+                "2. Provide path to existing file\n"
+                "3. Skip this model\n"
+                "Enter choice (1-3)",
+                "1"
+            )
             
-            # Download the file using wget
-            try:
-                subprocess.run(["wget", info["url"], "-O", str(compressed_path)], check=True)
-            except subprocess.CalledProcessError as e:
-                logger.error(f"Error downloading {filename}: {e}")
+            if choice == "1":
+                logger.info(f"Downloading {filename}...")
+                if filename == "bisenet_face_parsing.pth":
+                    # Extract file ID from Google Drive URL
+                    file_id = info["url"].split("/")[-2]
+                    if not download_from_gdrive(file_id, str(file_path)):
+                        logger.error(f"Failed to download {filename}")
+                        continue
+                else:
+                    compressed_path = file_path.with_suffix('.bz2') if info.get("compressed", False) else file_path
+                    try:
+                        subprocess.run(["wget", info["url"], "-O", str(compressed_path)], check=True)
+                    except subprocess.CalledProcessError as e:
+                        logger.error(f"Error downloading {filename}: {e}")
+                        continue
+                    except FileNotFoundError:
+                        logger.error("wget not found. Please install wget or use a different download method.")
+                        continue
+                    
+                    # Extract if compressed
+                    if info.get("compressed", False):
+                        with bz2.BZ2File(compressed_path, 'rb') as source, open(file_path, 'wb') as target:
+                            target.write(source.read())
+                        compressed_path.unlink()
+                
+                logger.info(f"Successfully downloaded and extracted {filename}")
+            
+            elif choice == "2":
+                custom_path = get_user_input("Enter path to existing model file")
+                if not os.path.exists(custom_path):
+                    logger.error(f"File not found: {custom_path}")
+                    continue
+                model_paths[filename] = custom_path
+                logger.info(f"Using custom model file: {custom_path}")
+            
+            else:
+                logger.warning(f"Skipping {filename}")
                 continue
-            except FileNotFoundError:
-                logger.error("wget not found. Please install wget or use a different download method.")
-                continue
-            
-            # Extract if compressed
-            if info.get("compressed", False):
-                with bz2.BZ2File(compressed_path, 'rb') as source, open(file_path, 'wb') as target:
-                    target.write(source.read())
-                compressed_path.unlink()
-            
-            logger.info(f"Successfully downloaded and extracted {filename}")
         else:
             logger.info(f"{filename} already exists")
             
-        model_paths[filename] = str(file_path)
+        if file_path.exists():
+            model_paths[filename] = str(file_path)
     
     # Save model paths to config file
-    import json
     with open(config_file, 'w') as f:
         json.dump(model_paths, f, indent=4)
     logger.info(f"Model paths saved to {config_file}")
+
+def run_smoke_tests():
+    """Run smoke tests to verify installation."""
+    logger.info("Running smoke tests...")
+    
+    try:
+        # Test importing required packages
+        import cv2
+        import numpy as np
+        import dlib
+        import torch
+        import torchvision
+        from PIL import Image
+        
+        # Test importing the package
+        from face_mask_creator import MaskCreator
+        
+        # Test model loading
+        creator = MaskCreator()
+        
+        # Create a test image
+        test_image = np.zeros((100, 100, 3), dtype=np.uint8)
+        test_image[25:75, 25:75] = [255, 255, 255]
+        
+        # Test mask creation
+        mask = creator.create(test_image, output_type='binary')
+        
+        logger.info("Smoke tests passed successfully!")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Smoke tests failed: {e}")
+        return False
 
 # Parse command line arguments only if running directly
 args = parse_args()
@@ -114,12 +195,16 @@ if args:
 # Download model files
 download_model_files(custom_paths=custom_paths, skip_download=skip_download)
 
+# Run smoke tests
+if not run_smoke_tests():
+    logger.warning("Smoke tests failed. The installation may not be complete.")
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="face-mask-creator",
-    version="0.0.2",
+    version="0.0.3",
     author="marmeladze",
     author_email="wrested@hotmail.de",
     description="A simple library for creating face masks from images",
@@ -140,6 +225,7 @@ setup(
         "torch>=1.7.0",
         "torchvision>=0.8.0",
         "pillow>=8.0.0",
+        "gdown>=4.7.1",  # Added for Google Drive downloads
     ],
     extras_require={
         'web': [
