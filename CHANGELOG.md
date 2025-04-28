@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.4] - 2024-04-29
+
+### Added
+- Non-interactive installation support for pip
+- Post-installation model setup script
+- Installation instructions for PyPI, source, and GitHub release
+- Detailed model download instructions in README
+- Version-specific dependency requirements
+
+### Changed
+- Updated README with comprehensive installation options
+- Improved documentation clarity
+- Updated BiSeNet model source link in README
+- Modified setup script to handle pip installations better
+
+### Fixed
+- Fixed pip installation issues with interactive prompts
+- Improved model download process during installation
+
 ## [0.0.3] - 2024-03-21
 
 ### Added

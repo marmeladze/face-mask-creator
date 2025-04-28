@@ -4,21 +4,49 @@ A simple library for creating face masks from images.
 
 ## Installation
 
-### Basic Installation
+### From PyPI (Recommended)
 
 ```bash
-pip install -e .
+pip install face-mask-creator
 ```
 
-### With Web Interface
-
-To install with the web interface, use:
-
+After installation, you'll need to download the required model files. Run:
 ```bash
+python -m face_mask_creator.setup
+```
+
+### From Source
+
+1. Clone the repository:
+```bash
+git clone https://github.com/marmeladze/face-mask-creator.git
+cd face-mask-creator
+```
+
+2. Install the package:
+```bash
+# Basic installation
+pip install -e .
+
+# With web interface
 pip install -e ".[web]"
 ```
 
-This will install additional dependencies required for the web server.
+3. Download the required model files:
+```bash
+python setup.py
+```
+
+### From GitHub Release
+
+```bash
+pip install git+https://github.com/marmeladze/face-mask-creator.git@v0.0.3
+```
+
+After installation, download the required model files:
+```bash
+python -m face_mask_creator.setup
+```
 
 ### Model Files
 
@@ -29,10 +57,15 @@ The library requires two model files:
    - Used for: Detecting facial landmarks
 
 2. **BiSeNet Face Parsing Model**: `bisenet_face_parsing.pth`
-   - Source: [face-parsing.PyTorch](https://github.com/zllrunning/face-parsing.PyTorch/raw/master/res/cp/79999_iter.pth)
+   - Source: [Google Drive](https://drive.google.com/file/d/154JgKpzCPW82qINcVieuPH3fZ2e0P812/view)
    - Used for: Face parsing and segmentation
 
-These models will be automatically downloaded during installation. If you want to use your own model files or skip the download, you can use the following options:
+During the model setup, you'll be prompted to:
+1. Choose whether to download the models or provide your own paths
+2. If downloading, the models will be automatically downloaded and placed in the correct location
+3. If using custom paths, you can specify them during setup
+
+You can also use command-line options during setup:
 
 ```bash
 # Use custom model files
@@ -79,12 +112,13 @@ Then open your browser and navigate to `http://localhost:5000` (or your custom p
 
 ### Core Requirements
 - Python 3.7+
-- numpy
-- opencv-python
-- dlib
-- torch
-- torchvision
-- pillow
+- numpy>=1.19.0
+- opencv-python>=4.5.0
+- dlib>=19.24.6
+- torch>=1.7.0
+- torchvision>=0.8.0
+- pillow>=8.0.0
+- gdown>=4.7.1
 
 ### Web Interface Requirements (optional)
 - flask>=2.0.0

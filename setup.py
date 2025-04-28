@@ -68,6 +68,9 @@ def download_model_files(custom_paths=None, skip_download=False):
     
     model_paths = {}
     
+    # Check if we're running in a pip install context
+    is_pip_install = any(arg.startswith(('install', 'bdist', 'build')) for arg in sys.argv[1:])
+    
     for filename, info in MODEL_URLS.items():
         file_path = models_dir / filename
         
@@ -86,6 +89,12 @@ def download_model_files(custom_paths=None, skip_download=False):
             continue
             
         if not file_path.exists():
+            # During pip install, skip interactive prompts
+            if is_pip_install:
+                logger.info(f"Skipping interactive model download during pip install for {filename}")
+                logger.info("Please run 'python setup.py' after installation to download models")
+                continue
+                
             # Ask user for input
             print(f"\nModel file '{filename}' not found.")
             choice = get_user_input(
@@ -204,7 +213,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="face-mask-creator",
-    version="0.0.3",
+    version="0.0.4",
     author="marmeladze",
     author_email="wrested@hotmail.de",
     description="A simple library for creating face masks from images",
